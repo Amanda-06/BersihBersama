@@ -1,11 +1,54 @@
-@import 'tailwindcss';
+/* Menggunakan sintaks baru Tailwind v4 */
+@import "tailwindcss";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* Set background dasar website */
+@layer base {
+    body {
+        @apply bg-slate-50;
+    }
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+@layer components {
+    /* Class untuk header hijau yang melengkung bawahnya */
+    /* Saran linter: rounded-b-[1.5rem] diganti menjadi rounded-b-3xl */
+    .header-green {
+        @apply bg-[#1a8e5f] rounded-b-3xl;
+    }
+}
+
+@layer utilities {
+    /* Styling khusus untuk Timeline di tab Lacak */
+    .timeline-container {
+        @apply relative pl-6 mt-4;
+    }
+    .timeline-item {
+        @apply relative pb-6;
+    }
+    
+    /* Garis vertikal timeline */
+    /* Saran linter: w-[2px] diganti menjadi w-0.5 */
+    .timeline-item::before {
+        content: '';
+        @apply absolute left-[-1.2rem] top-1 h-full w-0.5 bg-gray-200;
+    }
+    /* Sembunyikan garis di item terakhir */
+    .timeline-item:last-child::before {
+        @apply hidden;
+    }
+    
+    /* Titik abu-abu/hijau pada timeline */
+    .timeline-dot {
+        @apply absolute left-[-1.45rem] top-1.5 w-2.5 h-2.5 rounded-full bg-gray-400;
+    }
+    .timeline-dot.active {
+        @apply bg-emerald-500;
+    }
+}
+
+/* Kustomisasi Scrollbar agar rapi di desktop */
+::-webkit-scrollbar {
+    @apply w-2;
+}
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
 }

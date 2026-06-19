@@ -6,18 +6,7 @@
     <title>BISA - BersihBersama</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .grad-green {
-            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-        }
-        .text-grad-green {
-            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-    </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased pb-20">
 
