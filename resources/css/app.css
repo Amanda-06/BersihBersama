@@ -1,7 +1,5 @@
-/* Menggunakan sintaks baru Tailwind v4 */
 @import "tailwindcss";
 
-/* Set background dasar website */
 @layer base {
     body {
         @apply bg-slate-50;
@@ -9,15 +7,12 @@
 }
 
 @layer components {
-    /* Class untuk header hijau yang melengkung bawahnya */
-    /* Saran linter: rounded-b-[1.5rem] diganti menjadi rounded-b-3xl */
     .header-green {
         @apply bg-[#1a8e5f] rounded-b-3xl;
     }
 }
 
 @layer utilities {
-    /* Styling khusus untuk Timeline di tab Lacak */
     .timeline-container {
         @apply relative pl-6 mt-4;
     }
@@ -25,18 +20,15 @@
         @apply relative pb-6;
     }
     
-    /* Garis vertikal timeline */
-    /* Saran linter: w-[2px] diganti menjadi w-0.5 */
     .timeline-item::before {
         content: '';
         @apply absolute left-[-1.2rem] top-1 h-full w-0.5 bg-gray-200;
     }
-    /* Sembunyikan garis di item terakhir */
+
     .timeline-item:last-child::before {
         @apply hidden;
     }
-    
-    /* Titik abu-abu/hijau pada timeline */
+
     .timeline-dot {
         @apply absolute left-[-1.45rem] top-1.5 w-2.5 h-2.5 rounded-full bg-gray-400;
     }
@@ -45,7 +37,6 @@
     }
 }
 
-/* Kustomisasi Scrollbar agar rapi di desktop */
 ::-webkit-scrollbar {
     @apply w-2;
 }
