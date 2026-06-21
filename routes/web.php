@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\WargaController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\ReportController as UserReportController;
@@ -21,8 +22,8 @@ use Illuminate\Support\Facades\Route;
 | 4. auth + role:warga  -> khusus Warga
 */
 
-// Redirect halaman utama langsung ke login
-Route::redirect('/', '/login');
+// Landing Page (Akses Publik) - sesuai konsep UI revisi final
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +46,9 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Profil dipecah: halaman lihat (show) terpisah dari form edit (edit)
+    Route::get('/profil', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profil/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
 });
 
