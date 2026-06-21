@@ -1,45 +1,19 @@
 @import "tailwindcss";
 
-@layer base {
-    body {
-        @apply bg-slate-50;
-    }
-}
-
-@layer components {
-    .header-green {
-        @apply bg-[#1a8e5f] rounded-b-3xl;
-    }
-}
-
-@layer utilities {
-    .timeline-container {
-        @apply relative pl-6 mt-4;
-    }
-    .timeline-item {
-        @apply relative pb-6;
-    }
-    
-    .timeline-item::before {
-        content: '';
-        @apply absolute left-[-1.2rem] top-1 h-full w-0.5 bg-gray-200;
-    }
-
-    .timeline-item:last-child::before {
-        @apply hidden;
-    }
-
-    .timeline-dot {
-        @apply absolute left-[-1.45rem] top-1.5 w-2.5 h-2.5 rounded-full bg-gray-400;
-    }
-    .timeline-dot.active {
-        @apply bg-emerald-500;
-    }
-}
-
+/* Kustomisasi Scrollbar Khusus Desktop Dashboard */
 ::-webkit-scrollbar {
-    @apply w-2;
+    width: 8px;
+    height: 8px;
 }
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 ::-webkit-scrollbar-thumb {
     @apply bg-slate-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
 }

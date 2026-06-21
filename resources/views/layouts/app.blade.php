@@ -3,68 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BISA - BersihBersama</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>BiSa - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased pb-20">
+<body class="bg-slate-50 text-slate-800 font-sans flex h-screen overflow-hidden antialiased">
 
-    <header class="grad-green text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-md mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="bg-white text-green-600 p-2 rounded-full w-10 h-10 flex items-center justify-center">
-                    <i class="fa-solid fa-trash-can-arrow-up"></i>
+    <aside id="sidebar" class="w-64 shrink-0 bg-white border-r border-gray-200 flex flex-col justify-between h-full shadow-sm z-20 transition-all duration-300 ease-in-out relative">
+        <div>
+            <div class="px-5 py-6 flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-[#1a8e5f] rounded flex items-center justify-center text-white font-bold text-lg shadow-sm">B</div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-wide">BiSa</h1>
                 </div>
-                <h1 class="text-xl font-bold tracking-wide">BISA <span class="text-sm font-normal opacity-80 block -mt-1">BersihBersama</span></h1>
+                <button onclick="toggleSidebar()" class="text-gray-400 hover:text-[#1a8e5f] transition-colors p-2 rounded-lg hover:bg-emerald-50 outline-none" title="Tutup Menu">
+                    <i class="fa-solid fa-bars-staggered text-lg"></i>
+                </button>
             </div>
-            <div>
-                <i class="fa-solid fa-bell text-xl"></i>
+
+            <nav class="px-4 space-y-2 mt-2">
+                <button onclick="switchTab('dashboard', this)" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 text-[#1a8e5f] font-bold transition">
+                    <i class="fa-solid fa-chart-simple w-5 text-center"></i>
+                    <span class="text-sm">Dashboard</span>
+                </button>
+                <button onclick="switchTab('laporan', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:text-[#1a8e5f] hover:bg-emerald-50/50 transition font-medium">
+                    <i class="fa-solid fa-clipboard-list w-5 text-center"></i>
+                    <span class="text-sm">Laporan Saya</span>
+                </button>
+                <button onclick="switchTab('buat-laporan', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:text-[#1a8e5f] hover:bg-emerald-50/50 transition font-medium">
+                    <i class="fa-solid fa-pen w-5 text-center"></i>
+                    <span class="text-sm">Buat Laporan</span>
+                </button>
+                <button onclick="switchTab('pengumuman', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:text-[#1a8e5f] hover:bg-emerald-50/50 transition font-medium">
+                    <i class="fa-solid fa-bullhorn w-5 text-center"></i>
+                    <span class="text-sm">Pengumuman</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="p-4 relative">
+            <div id="profile-dropdown" class="hidden absolute bottom-full left-4 right-4 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50">
+                <button onclick="switchTab('profil', null); closeDropdown();" class="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition border-b border-gray-100">
+                    <i class="fa-solid fa-user text-purple-600 w-5 text-center"></i>
+                    <span class="text-sm font-semibold text-slate-700">Lihat Profil</span>
+                </button>
+                <a href="/login" class="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-red-50 transition">
+                    <i class="fa-solid fa-door-open text-red-500 w-5 text-center"></i>
+                    <span class="text-sm font-semibold text-red-600">Keluar</span>
+                </a>
+            </div>
+
+            <div id="profile-menu-btn" class="bg-slate-50 border border-gray-200 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-[#1a8e5f] rounded-full flex items-center justify-center text-white font-bold shadow-sm">A</div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-900">Ahmad Wijaya</p>
+                        <p class="text-xs text-[#1a8e5f] font-semibold">A-101</p>
+                    </div>
+                </div>
+                <button class="p-1 text-gray-500 hover:text-slate-800 transition">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
             </div>
         </div>
-    </header>
+    </aside>
 
-    <main class="max-w-md mx-auto p-4">
+    <main class="flex-1 h-full overflow-y-auto p-8 relative scroll-smooth">
+        
+        <button id="open-sidebar-btn" onclick="toggleSidebar()" class="hidden mb-6 flex items-center gap-2 text-slate-500 hover:text-[#1a8e5f] transition-colors outline-none bg-white border border-gray-200 px-3 py-2 rounded-lg shadow-sm" title="Buka Menu">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+
         @yield('content')
     </main>
 
-    <nav class="fixed bottom-0 w-full max-w-md mx-auto bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 left-1/2 -translate-x-1/2">
-        <div class="flex justify-around items-center py-3">
-            <button onclick="switchTab('beranda', this)" class="nav-btn text-green-600 flex flex-col items-center w-1/4">
-                <i class="fa-solid fa-house text-xl mb-1"></i>
-                <span class="text-[10px] font-semibold">Beranda</span>
-            </button>
-            <button onclick="switchTab('pengaduan', this)" class="nav-btn text-gray-400 hover:text-green-600 flex flex-col items-center w-1/4">
-                <i class="fa-solid fa-comment-dots text-xl mb-1"></i>
-                <span class="text-[10px] font-semibold">Aduan</span>
-            </button>
-            <button onclick="switchTab('lacak', this)" class="nav-btn text-gray-400 hover:text-green-600 flex flex-col items-center w-1/4">
-                <i class="fa-solid fa-clock-rotate-left text-xl mb-1"></i>
-                <span class="text-[10px] font-semibold">Lacak</span>
-            </button>
-            <button onclick="switchTab('komunitas', this)" class="nav-btn text-gray-400 hover:text-green-600 flex flex-col items-center w-1/4">
-                <i class="fa-solid fa-users text-xl mb-1"></i>
-                <span class="text-[10px] font-semibold">Komunitas</span>
-            </button>
-        </div>
-    </nav>
-
-    <script>
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById(tabId).classList.add('active');
-
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-green-600');
-                btn.classList.add('text-gray-400');
-            });
-            btnElement.classList.remove('text-gray-400');
-            btnElement.classList.add('text-green-600');
-            
-            window.scrollTo(0, 0);
-        }
-    </script>
 </body>
 </html>
