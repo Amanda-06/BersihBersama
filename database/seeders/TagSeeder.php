@@ -3,20 +3,29 @@
 namespace Database\Seeders;
 
 use App\Models\Tag;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TagSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * Tag bebas tambahan untuk laporan, bisa dipilih lebih dari satu (Many-to-Many).
      */
     public function run(): void
     {
-        $tags = ['Menumpuk', 'Bau Menyengat', 'Sumbat Saluran', 'Sampah Plastik', 'Limbah Elektronik'];
-        
-        foreach ($tags as $tag) {
-            Tag::create(['nama_tag' => $tag]);
+        // Sesuai revisi UI Form Buat Laporan: 3 checkbox tag tetap yang bisa dipilih warga.
+        $tags = [
+            'Bau Menyengat',
+            'Menumpuk',
+            'Berserakan',
+        ];
+
+        foreach ($tags as $namaTag) {
+            Tag::updateOrCreate(
+                ['nama_tag' => $namaTag],
+                ['nama_tag' => $namaTag]
+            );
         }
     }
 }

@@ -2,13 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends Factory<User>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
 class UserFactory extends Factory
 {
@@ -29,8 +28,32 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'no_hp' => '08' . fake()->numerify('##########'),
+            'blok_rumah' => 'Blok ' . fake()->randomLetter() . ' No. ' . fake()->numberBetween(1, 30),
+            'role' => 'warga',
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * State: jadikan user ini sebagai admin.
+     * Penggunaan: User::factory()->admin()->create();
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+        ]);
+    }
+
+    /**
+     * State: jadikan user ini sebagai warga (default, disediakan untuk eksplisit di seeder).
+     */
+    public function warga(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'warga',
+        ]);
     }
 
     /**

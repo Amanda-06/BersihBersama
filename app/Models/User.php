@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -22,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'no_hp',
+        'blok_rumah',
+        'role',
     ];
 
     /**
@@ -47,13 +49,47 @@ class User extends Authenticatable
         ];
     }
 
-    public function reports(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /*
+    |--------------------------------------------------------------------
+    | Relasi
+    |--------------------------------------------------------------------
+    */
+
+    /**
+     * Relasi One-to-Many: 1 user (warga) memiliki banyak reports.
+     */
+    public function reports(): HasMany
     {
-        return $this->hasMany(Report::class, 'user_id');
+        return $this->hasMany(Report::class);
     }
 
-    public function announcements(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /**
+     * Relasi One-to-Many: 1 user (admin) membuat banyak announcements.
+     */
+    public function announcements(): HasMany
     {
-        return $this->hasMany(Announcement::class, 'admin_id');
+        return $this->hasMany(Announcement::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------
+    | Helper Role
+    |--------------------------------------------------------------------
+    */
+
+    /**
+     * Cek apakah user ini admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Cek apakah user ini warga.
+     */
+    public function isWarga(): bool
+    {
+        return $this->role === 'warga';
     }
 }
