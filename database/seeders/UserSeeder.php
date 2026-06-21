@@ -2,28 +2,43 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use App\Models\User; // Alamat untuk model User
-use Illuminate\Support\Facades\Hash; // Alamat untuk fitur Hash Password
 
 class UserSeeder extends Seeder
 {
+
     public function run(): void
     {
-        // 1. Akun untuk Pengurus Perumahan (Admin)
-        User::create([
-            'name' => 'Admin Komplek',
-            'email' => 'admin@bisa.com',
-            'password' => Hash::make('password123'),
-            'peran' => 'admin',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@bisa.test'],
+            [
+                'name' => 'Pak RT Ahmad',
+                'email' => 'admin@bisa.test',
+                'password' => bcrypt('password'),
+                'no_hp' => '081234567890',
+                'blok_rumah' => 'Kantor RT',
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
 
-        // 2. Akun untuk Warga Komplek (User)
-        User::create([
-            'name' => 'Ameng',
-            'email' => 'warga@bisa.com',
-            'password' => Hash::make('password123'),
-            'peran' => 'warga',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'warga@bisa.test'],
+            [
+                'name' => 'Budi Santoso',
+                'email' => 'warga@bisa.test',
+                'password' => bcrypt('password'),
+                'no_hp' => '081298765432',
+                'blok_rumah' => 'Blok A No. 12',
+                'role' => 'warga',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::factory()
+            ->count(13)
+            ->warga()
+            ->create();
     }
 }

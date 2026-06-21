@@ -54,8 +54,7 @@ Route::middleware('auth')->group(function () {
 | 3. Admin Routes (khusus role: admin)
 |--------------------------------------------------------------------------
 */
-// Matikan sementara ['auth', 'role:admin'] agar tidak stuck
-Route::middleware([]) 
+Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -67,13 +66,13 @@ Route::middleware([])
         Route::patch('/laporan/{report}/status', [AdminReportController::class, 'updateStatus'])->name('reports.updateStatus');
         Route::delete('/laporan/{report}', [AdminReportController::class, 'destroy'])->name('reports.destroy');
 
-        // Kelola Pengumuman
+        // Kelola Pengumuman (CRUD via Modal)
         Route::get('/pengumuman', [AdminAnnouncementController::class, 'index'])->name('announcements.index');
         Route::post('/pengumuman', [AdminAnnouncementController::class, 'store'])->name('announcements.store');
         Route::put('/pengumuman/{announcement}', [AdminAnnouncementController::class, 'update'])->name('announcements.update');
         Route::delete('/pengumuman/{announcement}', [AdminAnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
-        // Data Warga
+        // Data Warga (Read Only)
         Route::get('/warga', [WargaController::class, 'index'])->name('wargas.index');
     });
 
@@ -84,14 +83,13 @@ Route::middleware([])
 | Catatan: TIDAK ADA route Pengumuman terpisah di sini -> Pengumuman hanya
 | muncul sebagai Card di Dashboard (lihat UserDashboardController@index).
 */
-// Matikan sementara ['auth', 'role:warga'] agar tidak stuck
-Route::middleware([]) 
+Route::middleware(['auth', 'role:warga'])
     ->prefix('user')
     ->name('user.')
     ->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
 
-        // Laporan Saya + Buat Laporan
+        // Laporan Saya + Buat Laporan (Resource lengkap kecuali method index dipisah biar urutan path rapi)
         Route::get('/laporan', [UserReportController::class, 'index'])->name('reports.index');
         Route::get('/laporan/buat', [UserReportController::class, 'create'])->name('reports.create');
         Route::post('/laporan', [UserReportController::class, 'store'])->name('reports.store');

@@ -3,31 +3,69 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Announcement\StoreAnnouncementRequest;
+use App\Http\Requests\Announcement\UpdateAnnouncementRequest;
+use App\Models\Announcement;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class AnnouncementController extends Controller
 {
-    // Tampilan tabel manajemen kelola seluruh pengumuman kompleks
-    public function index()
+    /**
+     * Tampilkan Halaman Kelola Pengumuman.
+     *
+     * Sesuai konsep UI Admin:
+     * - Tabel Pengumuman (Kolom: No, Judul Pengumuman, Tipe, Tanggal Dibuat)
+     * - Tombol + Tambah Pengumuman Baru (memicu Modal Form Kosong - Create)
+     * - Tombol Edit (memicu Modal yang sama, terisi data lama - Update)
+     *
+     * Catatan: Create & Update dipakai via Modal Pop-up (bukan halaman terpisah),
+     * jadi data untuk modal-modal itu sudah ikut dikirim bersama tabel di view ini.
+     */
+    public function index(): View
     {
-        return view('admin.announcements.index');
+        $announcements = Announcement::with('user')
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.announcements.index', [
+            'announcements' => $announcements,
+        ]);
     }
 
-    // Memproses pembuatan postingan pengumuman baru
-    public function store(Request $request)
+    /**
+     * Simpan pengumuman baru (C - Create), dipicu dari Modal Form Kosong.
+     */
+    public function store(StoreAnnouncementRequest $request): RedirectResponse
     {
-        return redirect()->back()->with('success', 'Pengumuman baru berhasil diterbitkan!');
+        $request->user()->announcements()->create($request->validated());
+
+        return redirect()
+            ->route('admin.announcements.index')
+            ->with('success', 'Pengumuman baru berhasil ditambahkan.');
     }
 
-    // Memproses pengeditan data teks pengumuman lama
-    public function update(Request $request, $id)
+    /**
+     * Update pengumuman (U - Update), dipicu dari Modal yang sudah terisi data lama.
+     */
+    public function update(UpdateAnnouncementRequest $request, Announcement $announcement): RedirectResponse
     {
-        return redirect()->back()->with('success', 'Pengumuman berhasil diperbarui.');
+        $announcement->update($request->validated());
+
+        return redirect()
+            ->route('admin.announcements.index')
+            ->with('success', 'Pengumuman berhasil diperbarui.');
     }
 
-    // Memproses pencabutan/penghapusan pengumuman dari papan informasi
-    public function destroy($id)
+    /**
+     * Hapus pengumuman (D - Delete).
+     */
+    public function destroy(Announcement $announcement): RedirectResponse
     {
-        return redirect()->back()->with('success', 'Pengumuman berhasil dihapus.');
+        $announcement->delete();
+
+        return redirect()
+            ->route('admin.announcements.index')
+            ->with('success', 'Pengumuman berhasil dihapus.');
     }
 }

@@ -2,33 +2,49 @@
 
 namespace Database\Factories;
 
-use App\Models\Report;
-use App\Models\User;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Report>
- */
 class ReportFactory extends Factory
 {
-    protected $model = Report::class;
-
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
-        // Mengambil ID warga secara acak yang sudah ada di database
-        $wargaId = User::where('peran', 'warga')->inRandomOrder()->first()?->id;
-        // Mengambil ID kategori secara acak
-        $categoryId = Category::inRandomOrder()->first()?->id;
-
         return [
-            'user_id' => $wargaId,
-            'category_id' => $categoryId,
-            'judul' => $this->faker->sentence(4), // Mengarang judul 4 kata
-            'deskripsi' => $this->faker->paragraph(3), // Mengarang deskripsi 3 kalimat
-            'foto' => null, // Sementara kosong dulu, aman
-            'lokasi' => 'RT 0' . $this->faker->numberBetween(1, 9) . ', Blok ' . $this->faker->randomElement(['A', 'B', 'C', 'D']),
-            'status' => $this->faker->randomElement(['Menunggu Validasi', 'Diterima', 'Diproses', 'Selesai']),
+            'user_id' => User::factory()->warga(),
+            'category_id' => Category::inRandomOrder()->first()?->id ?? Category::factory(),
+            'judul' => fake()->randomElement([
+                'Sampah menumpuk di depan rumah',
+                'Tong sampah rusak dan berbau',
+                'Sampah tidak diangkut 3 hari',
+                'Penumpukan sampah di selokan',
+                'Sampah berserakan dekat taman komplek',
+                'Bau menyengat dari tempat pembuangan sementara',
+                'Sampah B3 dibuang sembarangan',
+            ]),
+            'deskripsi' => fake()->paragraph(3),
+            'lokasi' => 'Blok ' . fake()->randomLetter() . ' No. ' . fake()->numberBetween(1, 30),
+            'status' => fake()->randomElement(['menunggu', 'diproses', 'selesai', 'ditolak']),
         ];
+    }
+
+    public function menunggu(): static
+    {
+        return $this->state(fn (array $attributes) => ['status' => 'menunggu']);
+    }
+
+    public function diproses(): static
+    {
+        return $this->state(fn (array $attributes) => ['status' => 'diproses']);
+    }
+
+    public function selesai(): static
+    {
+        return $this->state(fn (array $attributes) => ['status' => 'selesai']);
     }
 }

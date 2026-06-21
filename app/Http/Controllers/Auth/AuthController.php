@@ -3,46 +3,105 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    // Menampilkan Halaman Login
-    public function showLogin()
+    /**
+     * Tampilkan Halaman Login.
+     */
+    public function showLogin(): View
     {
         return view('auth.login');
     }
 
-    // Memproses Login (Simulasi Alur Pengalihan Role)
-    public function login(Request $request)
+    /**
+     * Proses Login.
+     *
+     * Sesuai konsep UI: Form Login menggunakan Email dan Password.
+     * Memakai session (Auth::attempt) sesuai SESSION_DRIVER=database di .env.
+     */
+    public function login(LoginRequest $request): RedirectResponse
     {
-        $email = $request->input('email');
-        
-        // Simulasi: Jika input email mengandung kata 'admin', masuk sebagai Admin
-        if (str_contains(strtolower($email), 'admin')) {
-            return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');
+        $request->ensureIsNotRateLimited();
+
+        $credentials = $request->only('email', 'password');
+
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            RateLimiter::hit($request->throttleKey());
+
+            return back()
+                ->withErrors(['email' => 'Email atau password yang Anda masukkan salah.'])
+                ->onlyInput('email');
         }
-        
-        // Default: Masuk sebagai Warga (User)
-        return redirect()->route('user.dashboard')->with('success', 'Selamat datang Warga!');
+
+        RateLimiter::clear($request->throttleKey());
+        $request->session()->regenerate(); // mencegah session fixation attack
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Redirect sesuai role, langsung mengecek kolom role di database agar aman dari error
+        return $user->role === 'admin'
+            ? redirect()->intended(route('admin.dashboard'))
+            : redirect()->intended(route('user.dashboard'));
     }
 
-    // Menampilkan Halaman Register Warga
-    public function showRegister()
+    /**
+     * Tampilkan Halaman Register.
+     */
+    public function showRegister(): View
     {
         return view('auth.register');
     }
 
-    // Memproses Registrasi Warga
-    public function register(Request $request)
+    /**
+     * Proses Register Warga.
+     *
+     * Sesuai konsep UI: Form Register Input Nama Lengkap, Nomor Rumah/Blok,
+     * Nomor HP, dan Password. Role otomatis "warga" (admin dibuat manual via seeder).
+     */
+    public function register(RegisterRequest $request): RedirectResponse
     {
-        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan masuk.');
+        $validated = $request->validated();
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'no_hp' => $validated['no_hp'],
+            'blok_rumah' => $validated['blok_rumah'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'warga',
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()
+            ->route('user.dashboard')
+            ->with('success', 'Akun berhasil dibuat. Selamat datang di BiSa!');
     }
 
-    // Memproses Logout
-    public function logout(Request $request)
+    /**
+     * Proses Logout.
+     *
+     * Sesuai konsep UI: Menu Pop-up Melayang berisi tombol Keluar/Logout,
+     * tersedia baik di sidebar Admin maupun User.
+     */
+    public function logout(): RedirectResponse
     {
-        return redirect()->route('login')->with('success', 'Anda telah keluar.');
+        Auth::logout();
+
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'Anda berhasil keluar.');
     }
 }

@@ -8,13 +8,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
+    /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory;
 
-    protected $fillable = ['nama_kategori'];
+    protected $fillable = [
+        'nama_kategori',
+        'slug',
+        'deskripsi',
+    ];
 
+    /*
+    |--------------------------------------------------------------------
+    | Relasi
+    |--------------------------------------------------------------------
+    */
+
+    /**
+     * Relasi One-to-Many: 1 category dipakai oleh banyak reports.
+     */
     public function reports(): HasMany
     {
-        return $this->hasMany(Report::class, 'category_id');
+        return $this->hasMany(Report::class);
     }
-
 }
