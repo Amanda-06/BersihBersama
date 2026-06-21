@@ -7,5 +7,7 @@
         @include('bisa.partials.buat_laporan')
         @include('bisa.partials.pengumuman')
         @include('bisa.partials.profil')
+        
+        @include('bisa.partials.detail_laporan')
     </div>
 @endsection
